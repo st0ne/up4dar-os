@@ -56,14 +56,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "up_app\a_lib_internal.h"
 #include "up_crypto\up_crypto.h"
 #include "gpio.h"
-
+#include "up_dstar/urcall.h"
 #include "ambe_fec.h"
 
 
 static ambe_q_t * microphone;
-
-
-
 
 void set_phy_parameters(void)
 {
@@ -162,6 +159,8 @@ static void phy_start_tx(void)
 				  (1 << 6)	// Setze den Repeater-Flag
 				;
 				
+	char* urcall = getURCALL();
+				
 	
 	
 	header[2] = 0x0;				// "2nd control byte"
@@ -190,7 +189,7 @@ static void phy_start_tx(void)
 	}
 	
 	for (short i=0; i<CALLSIGN_LENGTH; ++i){
-		header[20+i] = settings.s.urcall[ ((SETTING_CHAR(C_DV_USE_URCALL_SETTING  ) - 1)*CALLSIGN_LENGTH) + i];
+		header[20+i] = urcall[i];
 	}
 	
 	for (short i=0; i<CALLSIGN_LENGTH; ++i){
@@ -297,7 +296,7 @@ static void phy_send_response(uint8_t * rx_header)
 	
 	
 	for (short i=0; i<CALLSIGN_LENGTH; ++i){
-		header[20+i] = rx_header[27+i]; // UR is calling station
+		header[20+i] = "CQCQCQ  "[i]; // UR is calling station
 	}
 	
 	for (short i=0; i<CALLSIGN_LENGTH; ++i){
@@ -600,6 +599,7 @@ static void dtmf_cmd_exec(void)
 		
 		if (dtmf_cmd_string[0] == '#') // unlink
 		{
+			ambe_set_ref_timer(1);
 			dcs_off();
 			if (header_crc_result == DSTAR_HEADER_OK)
 			{
@@ -632,6 +632,7 @@ static void dtmf_cmd_exec(void)
 			
 			if (reflector >= 0)
 			{
+				ambe_set_ref_timer(1);
 				dcs_select_reflector(reflector, room_letter, SERVER_TYPE_DCS);
 				dcs_on();
 			
@@ -650,6 +651,7 @@ static void dtmf_cmd_exec(void)
 			
 			if (reflector >= 0)
 			{
+				ambe_set_ref_timer(1);
 				dcs_select_reflector(reflector, last_char, SERVER_TYPE_DEXTRA);
 				dcs_on();
 				
@@ -688,7 +690,7 @@ static void vTXTask( void *pvParameters )
 	vdisp_clear_rect(0,0,128,64);
 	gps_reset_slow_data();
 	
-#define PTT_CONDITION  ((gpio_get_pin_value(AVR32_PIN_PA28) == 0) || (software_ptt == 1))
+#define PTT_CONDITION  (((gpio_get_pin_value(AVR32_PIN_PA28) == 0) || (software_ptt == 1)) && (!parrot_mode))
 
 	
 	short tx_min_count = 0;
@@ -704,6 +706,9 @@ static void vTXTask( void *pvParameters )
 		switch(tx_state)
 		{
 		case 0:  // PTT off
+			tx_info_off();
+			ambe_ref_timer_break(0);
+			
 			if (PTT_CONDITION  // PTT pressed
 			 && (memcmp(settings.s.my_callsign, "NOCALL  ", CALLSIGN_LENGTH) != 0))
 			{
@@ -800,6 +805,7 @@ static void vTXTask( void *pvParameters )
 								
 								if (rx_header[26] == 'U')
 								{
+									ambe_set_ref_timer(1);
 									dcs_off();
 								}
 								else if ((rx_header[26] == 'L') && (rx_header[25] >= 'A') && (rx_header[25] <= 'Z'))
@@ -824,11 +830,13 @@ static void vTXTask( void *pvParameters )
 									{
 										if (memcmp("DCS", rx_header+19, 3) == 0)
 										{
+											ambe_set_ref_timer(1);
 											dcs_select_reflector(n, rx_header[25], SERVER_TYPE_DCS);
 											dcs_on();
 										}
 										else if (memcmp("XRF", rx_header+19, 3) == 0)
 										{
+											ambe_set_ref_timer(1);
 											dcs_select_reflector(n, rx_header[25], SERVER_TYPE_DEXTRA);
 											dcs_on();
 										}
@@ -854,6 +862,8 @@ static void vTXTask( void *pvParameters )
 			break;
 			
 		case 1:  // PTT on
+			tx_info_on();
+			ambe_ref_timer_break(1);
 			if ((!PTT_CONDITION) && (tx_min_count <= 0))  // PTT released
 			{
 				tx_state = 2;
