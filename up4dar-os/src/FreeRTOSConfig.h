@@ -1,22 +1,3 @@
-/*
-
-Copyright (C) 2011,2012   Michael Dirska, DL1BFF (dl1bff@mdx.de)
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-*/
-
 /*This file is prepared for Doxygen automatic documentation generation.*/
 /*! \file *********************************************************************
  *
@@ -79,24 +60,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define configUSE_PREEMPTION      1
 #define configUSE_IDLE_HOOK       1
-// #define configUSE_TICK_HOOK       0
 #define configUSE_TICK_HOOK       1
-
-
-// #define configCPU_CLOCK_HZ        ( FOSC0 ) /* Hz clk gen */
-// #define configPBA_CLOCK_HZ        ( FOSC0 )
-
-//#define configCPU_CLOCK_HZ        ( 60000000 ) /* Hz clk gen */
-//#define configPBA_CLOCK_HZ        ( 15000000 )
 #define configCPU_CLOCK_HZ        ( 65536000 ) /* Hz clk gen */
 #define configPBA_CLOCK_HZ        ( 16384000 )
-
-//#define configCPU_CLOCK_HZ        ( 64000000 ) /* Hz clk gen */
-//#define configPBA_CLOCK_HZ        ( 16000000 )
-
-
-#define configTICK_RATE_HZ        ( ( portTickType ) 1000 )
-#define configMAX_PRIORITIES      ( ( unsigned portBASE_TYPE ) 8 )
+#define configTICK_RATE_HZ        ( ( TickType_t ) 1000 )
+#define configMAX_PRIORITIES      ( 8 )
 #define configMINIMAL_STACK_SIZE  ( ( unsigned short ) 128 )
 /* configTOTAL_HEAP_SIZE is not used when heap_3.c is used. */
 #define configTOTAL_HEAP_SIZE     ( ( size_t ) ( 1024*39 ) )

@@ -464,7 +464,7 @@ static void prvSetupTimerInterrupt(void)
 		/* Set the compare triggers.
 		Remember TC counter is 16-bits, so counting second is not possible!
 		That's why we configure it to count ms. */
-		tc_write_rc( tc, configTICK_TC_CHANNEL, ( configPBA_CLOCK_HZ / 4) / configTICK_RATE_HZ );
+		tc_write_rc( tc, configTICK_TC_CHANNEL, ( configPBA_CLOCK_HZ / 2) / configTICK_RATE_HZ );
 
 		tc_configure_interrupts( tc, configTICK_TC_CHANNEL, &tc_interrupt );
 
