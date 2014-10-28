@@ -707,6 +707,6 @@ void sw_update_init(xQueueHandle dq )
 {
 	dstarQueue = dq;
 	
-	xTaskCreate( vUpdateTask, (signed char *) "Update", 1500, ( void * ) 0,  (tskIDLE_PRIORITY + 1), ( xTaskHandle * ) NULL );
+	xTaskCreate( vUpdateTask, (const char *) "Update", 1500, ( void * ) 0,  (tskIDLE_PRIORITY + 1), ( xTaskHandle * ) NULL );
 	
 }

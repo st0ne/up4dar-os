@@ -930,7 +930,7 @@ void gps_init(int comPortHandle)
 	gpsSerialHandle = comPortHandle;
 	
 	
-	xTaskCreate( vGPSTask, (signed char *) "GPS", configMINIMAL_STACK_SIZE, ( void * ) 0,
+	xTaskCreate( vGPSTask, (const char *) "GPS", configMINIMAL_STACK_SIZE, ( void * ) 0,
 		 ( tskIDLE_PRIORITY + 1 ), ( xTaskHandle * ) NULL );
 	
 }

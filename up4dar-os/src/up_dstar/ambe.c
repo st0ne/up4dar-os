@@ -715,7 +715,7 @@ void ambe_init( audio_q_t * decoded_audio, audio_q_t * input_audio,
 	
 	ambe_encode = 0;
 	
-	xTaskCreate( ambeTask, ( signed char * ) "AMBE", configMINIMAL_STACK_SIZE, NULL,
+	xTaskCreate( ambeTask, ( const char * ) "AMBE", configMINIMAL_STACK_SIZE, NULL,
 		 tskIDLE_PRIORITY + 2 , ( xTaskHandle * ) NULL );
 
 }

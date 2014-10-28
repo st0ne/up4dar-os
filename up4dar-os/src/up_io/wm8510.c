@@ -318,7 +318,7 @@ void wm8510Init( audio_q_t * tx, audio_q_t * rx )
 	audio_tx_q = tx;
 	audio_rx_q = rx;
 	
-	xTaskCreate( wm8510Task, ( signed char * ) "WM8510", configMINIMAL_STACK_SIZE, NULL,
+	xTaskCreate( wm8510Task, ( const char * ) "WM8510", configMINIMAL_STACK_SIZE, NULL,
 		 tskIDLE_PRIORITY + 2 , ( xTaskHandle * ) NULL );
 	
 }

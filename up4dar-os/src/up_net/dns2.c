@@ -636,7 +636,7 @@ void dns2_init(void)
 	
 	memset(dc, 0, DNS_NUMBER_OF_ENTRIES * (sizeof (struct dns2_cache))); // clear cache memory
 	
-	xTaskCreate( vDNSTask, (signed char *) "DNS2", 400, ( void * ) 0, ( tskIDLE_PRIORITY + 1 ), ( xTaskHandle * ) NULL );
+	xTaskCreate( vDNSTask, (const char *) "DNS2", 400, ( void * ) 0, ( tskIDLE_PRIORITY + 1 ), ( xTaskHandle * ) NULL );
 
 }
 

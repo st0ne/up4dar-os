@@ -204,6 +204,6 @@ void crypto_init(ambe_q_t * microphone_ambe_q)
 {
 	mic_ambe_q = microphone_ambe_q;
 	
-	xTaskCreate( cryptoTask, ( signed char * ) "crypto", 1400, NULL,
+	xTaskCreate( cryptoTask, ( const char * ) "crypto", 1400, NULL,
 	tskIDLE_PRIORITY + 1 , ( xTaskHandle * ) NULL );
 }

@@ -1170,6 +1170,6 @@ void txtask_init( ambe_q_t * mic )
 	{
 		repeater_callsign[7] = 'B'; // my repeater module
 	}
-	xTaskCreate( vTXTask, (signed char *) "TX", 300, ( void * ) 0, tskIDLE_PRIORITY + 1, ( xTaskHandle * ) NULL );
+	xTaskCreate( vTXTask, (const char *) "TX", 300, ( void * ) 0, tskIDLE_PRIORITY + 1, ( xTaskHandle * ) NULL );
 	
 }

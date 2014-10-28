@@ -307,5 +307,5 @@ void phyCommInit( xQueueHandle dq, int comPortHandle )
 	
 	xPort = comPortHandle;
 	
-	xTaskCreate( vComRxTask, ( signed char * ) "COMRx", comSTACK_SIZE, NULL, mainCOM_TEST_PRIORITY, ( xTaskHandle * ) NULL );
+	xTaskCreate( vComRxTask, ( const char * ) "COMRx", comSTACK_SIZE, NULL, mainCOM_TEST_PRIORITY, ( xTaskHandle * ) NULL );
 }

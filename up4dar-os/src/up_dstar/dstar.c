@@ -1516,7 +1516,7 @@ void dstarInit( xQueueHandle dq )
 	
 	snmpReqQueue = xQueueCreate( 3, sizeof (struct snmpReq) );
 	
-	xTaskCreate( dstarRXTask, ( signed char * ) "DstarRx", configMINIMAL_STACK_SIZE, NULL,
+	xTaskCreate( dstarRXTask, ( const char * ) "DstarRx", configMINIMAL_STACK_SIZE, NULL,
 		 tskIDLE_PRIORITY + 1 , ( xTaskHandle * ) NULL );
 		 
 	// xTaskCreate( dstarRXTask2, ( signed char * ) "DstarRx2", 300, NULL,

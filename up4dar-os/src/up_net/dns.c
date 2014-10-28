@@ -436,7 +436,7 @@ void dns_init(void)
 {
 	dns_udp_local_port = 0;
 	
-	xTaskCreate( vDNSTask, (signed char *) "DNS", 200, ( void * ) 0, ( tskIDLE_PRIORITY + 1 ), ( xTaskHandle * ) NULL );
+	xTaskCreate( vDNSTask, (const char *) "DNS", 200, ( void * ) 0, ( tskIDLE_PRIORITY + 1 ), ( xTaskHandle * ) NULL );
 
 }
 

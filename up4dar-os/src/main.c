@@ -1096,13 +1096,13 @@ int main (void)
 		// if beacon disabled -> used fixed ipv4 address
 	
 	
-	xTaskCreate( vServiceTask, (signed char *) "srv", configMINIMAL_STACK_SIZE, ( void * ) 0,
+	xTaskCreate( vServiceTask, (const char *) "srv", configMINIMAL_STACK_SIZE, ( void * ) 0,
 		standard_TASK_PRIORITY, ( xTaskHandle * ) NULL );
 	
-	xTaskCreate( vButtonTask, (signed char *) "button", configMINIMAL_STACK_SIZE, ( void * ) 0,
+	xTaskCreate( vButtonTask, (const char *) "button", configMINIMAL_STACK_SIZE, ( void * ) 0,
 		standard_TASK_PRIORITY, ( xTaskHandle * ) NULL );
 	
-	xTaskCreate( vRXTXEthTask, (signed char *) "rxtxeth", 600, ( void * ) 0,
+	xTaskCreate( vRXTXEthTask, (const char *) "rxtxeth", 600, ( void * ) 0,
 		standard_TASK_PRIORITY, ( xTaskHandle * ) NULL );
 	
 	dstarInit( dstarQueue );

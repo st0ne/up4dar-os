@@ -348,6 +348,6 @@ void sdcard_init (audio_q_t * tx)
 {
 	audio_tx_q = tx;
 	
-	xTaskCreate( vSDCardTask, (signed char *) "SDCARD", 200, ( void * ) 0,  (tskIDLE_PRIORITY + 1), ( xTaskHandle * ) NULL );
+	xTaskCreate( vSDCardTask, (const char *) "SDCARD", 200, ( void * ) 0,  (tskIDLE_PRIORITY + 1), ( xTaskHandle * ) NULL );
 	
 }

@@ -1195,5 +1195,5 @@ static void vTXTask( void *pvParameters )
 
 void txtest_init(void)
 {
-	xTaskCreate( vTXTask, (signed char *) "TX", 200, ( void * ) 0, (tskIDLE_PRIORITY + 1), ( xTaskHandle * ) NULL );
+	xTaskCreate( vTXTask, (const char *) "TX", 200, ( void * ) 0, (tskIDLE_PRIORITY + 1), ( xTaskHandle * ) NULL );
 }

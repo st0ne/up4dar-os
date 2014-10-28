@@ -348,6 +348,6 @@ static void vLCDTask( void *pvParameters )
 
 void lcd_init(void)
 {
-	xTaskCreate( vLCDTask, (signed char *) "LCD", 300, ( void * ) 0,  (tskIDLE_PRIORITY + 1), ( xTaskHandle * ) NULL );
+	xTaskCreate( vLCDTask, (const char *) "LCD", 300, ( void * ) 0,  (tskIDLE_PRIORITY + 1), ( xTaskHandle * ) NULL );
 	
 }	
