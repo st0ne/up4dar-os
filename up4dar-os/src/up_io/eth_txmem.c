@@ -34,27 +34,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "eth_txmem.h"
 
 
-
+#define NUM_MEM_CFG 2
 #define TX_BUFFER_Q_LEN		15
 
 static unsigned long tx_buffer_q[TX_BUFFER_Q_LEN * 2];
 
-
-
-
-typedef struct txmem_mem_cfg
-{
-	int size;
-	int num;
-} txmem_mem_cfg_t;
-
-
-#define NUM_MEM_CFG 2
-
-const static txmem_mem_cfg_t mem_cfg[NUM_MEM_CFG] = {
-	{  200,  10  },  // 10 buffers with 200 byte
-	{ 1540,   3  }	// 3 buffers with 1540 byte
-};
 
 static eth_txmem_t * txmem_pool[NUM_MEM_CFG];
 
@@ -68,102 +52,86 @@ static xQueueHandle  tx_q;
 
 int eth_txmem_init(void)
 {
-	int i;
-	int j;
-	
 	AVR32_MACB.tbqp = (unsigned long) & tx_buffer_q;
 	
 	tx_q = xQueueCreate( 10, sizeof (eth_txmem_t *) );
-	
+
+	int i;
 	for (i=0; i < NUM_MEM_CFG; i++)
-	{	
-		txmem_pool[i] = (eth_txmem_t *) pvPortMalloc ( mem_cfg[i].num * (sizeof (eth_txmem_t)));
-	
-		if (txmem_pool[i] == NULL)
-			return -1;
-			
-		uint8_t * data = (uint8_t *) pvPortMalloc ( mem_cfg[i].num *  mem_cfg[i].size );
-		
-		if (data == NULL)
-			return -1;
-		
-		for (j=0; j < mem_cfg[i].num; j++)
-		{
-			txmem_pool[i][j].state = TXMEM_FREE;
-			txmem_pool[i][j].tx_size = 0;
-			txmem_pool[i][j].data = data + (j * mem_cfg[i].size);
-		}	
+	{
+		txmem_pool[i]->state = TXMEM_FREE;
 	}
-	
+
+
 	return 0;
 }
-
-// extern int maxTXQ;
 
 static void eth_txmem_cleanup (void)
 {
 	int i;
-	int j;
 	for (i=0; i < NUM_MEM_CFG; i++)
-	{	
-		for (j=0; j < mem_cfg[i].num; j++)
+	{
+		if (txmem_pool[i]->state == TXMEM_IN_HARDWARE_Q)
 		{
-			if (txmem_pool[i][j].state == TXMEM_IN_HARDWARE_Q)
-			{
-				txmem_pool[i][j].state = TXMEM_FREE;
-				
-				// maxTXQ --;
-			}
+			txmem_pool[i]->state = TXMEM_FREE;
+			vPortFree(txmem_pool[i]->data);
+			vPortFree(txmem_pool[i]);
 		}
-	}					
+	}
 }
 
 
 void eth_txmem_free (eth_txmem_t * packet)
 {
 	packet->state = TXMEM_FREE;
-	
-	// maxTXQ --;
+	vPortFree(packet->data);
+	vPortFree(packet);
 }
 
 eth_txmem_t * eth_txmem_get (int size)
 {
 	int i;
-	int j;
 	for (i=0; i < NUM_MEM_CFG; i++)
 	{
-		if (mem_cfg[i].size < size)  // look for smallest buffer size that fits
-			continue;
-			
-		for (j=0; j < mem_cfg[i].num; j++)
+		if (txmem_pool[i]->state == TXMEM_FREE)
 		{
-			if (txmem_pool[i][j].state == TXMEM_FREE)
+			uint8_t * data = (uint8_t *) pvPortMalloc(sizeof(eth_txmem_t));
+			if (data == NULL)
 			{
-				txmem_pool[i][j].state = TXMEM_ALLOC;
-				txmem_pool[i][j].tx_size = size;
-				
-			//	maxTXQ ++;
-				return & txmem_pool[i][j];
+				return 0;
 			}
+			
+			txmem_pool[i] = pvPortMalloc(size);
+			if (txmem_pool[i] == NULL)
+			{
+				vPortFree(data);
+				return 0;
+			}
+			
+			txmem_pool[i]->data = data;
+			txmem_pool[i]->state = TXMEM_ALLOC;
+			txmem_pool[i]->tx_size = 0;
+			
+			return txmem_pool[i];
 		}
-	}	
-	
-	return 0;	
+	}
+		
+	return 0;
 }
 
 
 int eth_txmem_send (eth_txmem_t * packet)
 {
+	
 	eth_txmem_t * p = packet;
 	
 	p->state = TXMEM_IN_TXQ;
 	
 	if( xQueueSend( tx_q, &p, 0 ) != pdPASS )
 	{
-		// TODO: error handling
-		// queue is full, release buffer
 		p->state = TXMEM_FREE; 
-	//	maxTXQ --;
+		vPortFree(packet->data);
+		vPortFree(packet);
 		return -1;
 	}		
 	

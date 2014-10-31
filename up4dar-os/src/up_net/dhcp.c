@@ -258,9 +258,9 @@ static void dhcp_calc_chksum_and_send (eth_txmem_t * packet, int udp_size)
 		
 		ipneigh_send_packet (&tmp_addr, packet);
 	 }  */
-		
-	eth_txmem_send(packet);
 	
+	
+	eth_txmem_send(packet);
 }
 
 
@@ -407,7 +407,7 @@ void dhcp_service(void)
 	
 	char buf[7];
 	
-	vdisp_i2s(buf, 6, 10, 0, dhcp_timer);
+	vdisp_i2s(buf, 6, 10, 0, dhcp_state);
 	vd_prints_xy(VDISP_DEBUG_LAYER, 0, 0, VDISP_FONT_4x6, 0, "DHCP Timer");
 	vd_prints_xy(VDISP_DEBUG_LAYER, 44, 0, VDISP_FONT_4x6, 0, buf);
 	
